@@ -1,0 +1,10 @@
+body { font-family: Arial, sans-serif; margin:20px; }
+.header { background-color:#007bff; color:white; padding:10px; }
+h1 { margin:0; }
+h2 { color:#007bff; }
+.error { color:red; }
+.success { color:green; }
+input, textarea { width:300px; padding:5px; }
+button { padding:5px 10px; background:#007bff; color:white; border:none; cursor:pointer; }
+button:hover { background:#0056b3; }
+textarea { height:100px; }
