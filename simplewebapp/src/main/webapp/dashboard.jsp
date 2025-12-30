@@ -1,3 +1,13 @@
+<%-- 
+    Student Dashboard Page
+    ----------------------
+    This JSP page checks for an active user session before granting access.
+    If the user is not logged in, they are redirected to the login page.
+    Once authenticated, the page displays a styled student dashboard
+    with options to give feedback and log out.
+--%>
+
+
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%
     HttpSession sessionObj = request.getSession(false);
