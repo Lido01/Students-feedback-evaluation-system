@@ -1,8 +1,12 @@
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\models\User.java
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\LogoutServlet.java
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\LoginServlet.java
+C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\StudentServlet.java
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\models\Feedback.java
+C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\DepartmentServlet.java
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\AdminServlet.java
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\RegisterServlet.java
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\FeedbackServlet.java
 C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\InstructorServlet.java
+C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\util\DBUtil.java
+C:\Users\hp\Desktop\my-project\java\Students-feedback-evalution-system\simplewebapp\src\main\java\com\example\feedbacksystem\servlets\AffairsServlet.java

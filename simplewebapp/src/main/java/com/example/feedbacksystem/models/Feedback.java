@@ -1,8 +1,8 @@
 package com.example.feedbacksystem.models;
 
 public class Feedback {
-    private String studentName;
-    private String message;
+   final private String studentName;
+   final private String message;
 
     public Feedback(String studentName, String message){
         this.studentName = studentName;

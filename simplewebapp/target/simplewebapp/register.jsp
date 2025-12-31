@@ -1,44 +1,41 @@
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    <title>Register</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="container">
-<h2>Register</h2>
-<form action="register" method="post">
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Register</button>
-</form>
-<p>Already have an account? <a href="login.jsp">Login</a></p>
-</div>
-</body>
-</html> -->
-
-
-<%@ page session="true" %>
-<%@ include file="header.jsp" %>
 <html>
 <head>
 <link rel="stylesheet" href="css/style.css">
-<title>Register</title>
 </head>
 <body>
-<h2>Register</h2>
-<% if(request.getParameter("error") != null){ %>
-    <p class="error">Username already exists!</p>
-<% } %>
-<form action="register" method="post">
-    <label>Username:</label><br>
-    <input type="text" name="username" required><br><br>
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
-    <button type="submit">Register</button>
-</form>
-<p>Already registered? <a href="login.jsp">Login here</a></p>
+    <form action="register" method="post" class="card">
+        <h2>Register</h2>
+
+        <input name="schoolId" placeholder="School ID" required>
+        <input name="fullName" placeholder="Full Name" required>
+        <input name="email" type="email" placeholder="Email" required>
+        <input name="phone" placeholder="Phone Number" required>
+
+        <select name="role">
+            <option>STUDENT</option>
+            <option>INSTRUCTOR</option>
+            <option>DEPARTMENT</option>
+            <option>AFFAIRS</option>
+            <option>ADMIN</option>
+        </select>
+
+        <input type="password" name="password" placeholder="Password" required>
+        
+        <button>Register</button>
+    </form>
+    <!-- if reggister fails -->
+    <% if ("exists".equals(request.getParameter("error"))) { %>
+        <p class="error">School ID already registered</p>
+    <% } %>
+
+    <!-- if reggistered before -->
+    <% if ("success".equals(request.getParameter("status"))) { %>
+        <p class="success">Registration successful! <a href="login.jsp">Login here</a>.</p>
+    <% } %>
+    <!-- login link -->
+    <p style="margin-top:15px;">
+        Already registered? <a href="login.jsp">Login here</a>
+    </p>
+
 </body>
 </html>
-

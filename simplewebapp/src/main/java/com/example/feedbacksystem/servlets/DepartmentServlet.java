@@ -1,0 +1,62 @@
+package com.example.feedbacksystem.servlets;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import com.example.feedbacksystem.util.DBUtil;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@WebServlet("/department")
+public class DepartmentServlet extends HttpServlet {
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+
+        int feedbackId = Integer.parseInt(req.getParameter("feedbackId"));
+        String responseText = req.getParameter("response");
+        String action = req.getParameter("action"); // FORWARD or null
+
+        HttpSession session = req.getSession();
+        int departmentUserId = (int) session.getAttribute("userId");
+
+        try (Connection con = DBUtil.getConnection()) {
+
+            // 1️⃣ Save department response
+            String insertResponse =
+                "INSERT INTO feedback_responses (feedback_id, responder_id, responder_role, response) " +
+                "VALUES (?, ?, 'DEPARTMENT', ?)";
+
+            PreparedStatement ps1 = con.prepareStatement(insertResponse);
+            ps1.setInt(1, feedbackId);
+            ps1.setInt(2, departmentUserId);
+            ps1.setString(3, responseText);
+            ps1.executeUpdate();
+
+            // 2️⃣ Update feedback routing
+            String updateStatus;
+            if ("FORWARD".equals(action)) {
+                updateStatus =
+                    "UPDATE feedback SET status='ESCALATED', target_role='AFFAIRS' WHERE id=?";
+            } else {
+                updateStatus =
+                    "UPDATE feedback SET status='CLOSED' WHERE id=?";
+            }
+
+            PreparedStatement ps2 = con.prepareStatement(updateStatus);
+            ps2.setInt(1, feedbackId);
+            ps2.executeUpdate();
+
+            resp.sendRedirect("department.jsp");
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

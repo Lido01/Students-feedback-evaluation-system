@@ -1,8 +1,12 @@
 com\example\feedbacksystem\servlets\LogoutServlet.class
 com\example\feedbacksystem\servlets\FeedbackServlet.class
+com\example\feedbacksystem\servlets\StudentServlet.class
+com\example\feedbacksystem\servlets\DepartmentServlet.class
+com\example\feedbacksystem\servlets\AffairsServlet.class
 com\example\feedbacksystem\servlets\LoginServlet.class
 com\example\feedbacksystem\servlets\RegisterServlet.class
 com\example\feedbacksystem\models\User.class
 com\example\feedbacksystem\servlets\AdminServlet.class
 com\example\feedbacksystem\servlets\InstructorServlet.class
 com\example\feedbacksystem\models\Feedback.class
+com\example\feedbacksystem\util\DBUtil.class
