@@ -1,10 +1,233 @@
-body { font-family: Arial, sans-serif; margin:20px; }
-.header { background-color:#007bff; color:white; padding:10px; }
-h1 { margin:0; }
-h2 { color:#007bff; }
-.error { color:red; }
-.success { color:green; }
-input, textarea { width:300px; padding:5px; }
-button { padding:5px 10px; background:#007bff; color:white; border:none; cursor:pointer; }
-button:hover { background:#0056b3; }
-textarea { height:100px; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f6f8;
+    color: #333;
+}
+
+/* Header */
+.header {
+    background: #1e293b;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h2 {
+    font-size: 22px;
+}
+
+.header nav a {
+    color: #e5e7eb;
+    margin-left: 15px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.header nav a:hover {
+    color: #38bdf8;
+}
+
+/* Container */
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Forms */
+form label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+form input, form select, form textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+form button {
+    margin-top: 20px;
+    background: #2563eb;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form button:hover {
+    background: #1d4ed8;
+}
+
+/* Messages */
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.success {
+    color: green;
+    margin-top: 10px;
+}
+
+/* Role badge */
+.role {
+    background: #38bdf8;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+}
+
+.header {
+    background: #003366;
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    /* margin-top: 15px; */
+    border: 1px solid #ccc;
+    margin: 15px 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,.1);
+}
+
+.warning {
+    border-left: 5px solid red;
+}
+
+textarea, select, button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+}
+
+button {
+    background: #003366;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background: #002244;
+}
+.error {
+    color: red;
+    margin-top: 10px;
+}
+.success {
+    color: green;
+    margin-top: 10px;
+}
+.role-badge {
+    background: #ffd700;
+    color: #003366;
+    padding: 3px 7px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+nav a:hover {
+    text-decoration: underline;
+}
+nav a {
+    color: #e5e7eb;
+    margin-left: 15px;
+    text-decoration: none;
+    font-weight: 500;
+}
+nav a:hover {
+    color: #38bdf8;
+}
+
+.pending { color: orange; font-weight: bold; }
+.completed { color: green; font-weight: bold; }
+.declined { color: red; font-weight: bold; }
+
+.feedback-box {
+    border-left: 5px solid #003366;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.feedback-box .meta {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+h2 {
+    color: #003366;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.badge.pending { background:#ffeaa7; }
+.badge.responded { background:#55efc4; }
+.badge.closed { background:#b2bec3; }
+.badge.warning { background:#fab1a0; }
+
+button, .btn {
+    padding: 8px 14px;
+    background: #003366;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button.danger {
+    background: #c0392b;
+}
+
+button.secondary {
+    background: #636e72;
+}
+
+textarea, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}

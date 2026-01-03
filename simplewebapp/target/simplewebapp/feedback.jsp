@@ -1,26 +1,25 @@
-<%@ page session="true" %>
 <%@ include file="header.jsp" %>
-<%@ page import="com.example.feedbacksystem.models.User" %>
-<%
-    User user = (User) session.getAttribute("user");
-    if(user == null || !"student".equals(user.getRole())){
-        response.sendRedirect("login.jsp");
-        return;
-    }
-%>
-<html>
-<head>
 <link rel="stylesheet" href="css/style.css">
-<title>Feedback</title>
-</head>
-<body>
-<h2>Submit Feedback</h2>
-<% if(request.getParameter("success") != null){ %>
-    <p class="success">Feedback submitted successfully!</p>
-<% } %>
-<form action="submitFeedback" method="post">
-    <textarea name="message" placeholder="Enter feedback" required></textarea><br><br>
-    <button type="submit">Submit</button>
-</form>
-</body>
-</html>
+
+<div class="container">
+    <h2>Submit Feedback</h2>
+
+    <form action="submitFeedback" method="post">
+
+        <label>Feedback Message</label>
+        <textarea name="message" rows="4" required></textarea>
+
+        <label>Visibility</label>
+        <select name="visibility">
+            <option value="ADMIN_ONLY">Admin Only</option>
+            <option value="INSTRUCTOR_VISIBLE">Instructor Can See</option>
+        </select>
+
+        <label>Instructor (optional)</label>
+        <select name="instructorId">
+            <option value="">-- Select Instructor --</option>
+        </select>
+
+        <button type="submit">Send Feedback</button>
+    </form>
+</div>

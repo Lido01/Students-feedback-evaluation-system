@@ -1,31 +1,64 @@
 package com.example.feedbacksystem.servlets;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
-import java.util.ArrayList;
-import com.example.feedbacksystem.models.Feedback;
-import com.example.feedbacksystem.models.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
-@WebServlet("/submitFeedback")
+import com.example.feedbacksystem.util.DBUtil;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
+@WebServlet("/feedback")
 public class FeedbackServlet extends HttpServlet {
-    private static final ArrayList<Feedback> feedbackList = new ArrayList<>();
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
 
-        HttpSession session = request.getSession(false);
-        if(session == null || session.getAttribute("user")==null){
-            response.sendRedirect("login.jsp"); return;
+        HttpSession session = req.getSession(false);
+        if (session == null || !"STUDENT".equals(session.getAttribute("role"))) {
+            resp.sendRedirect("login.jsp");
+            return;
         }
 
-        String message = request.getParameter("message");
-        User user = (User) session.getAttribute("user");
-        feedbackList.add(new Feedback(user.getUsername(), message));
-        response.sendRedirect("feedback.jsp?success=true");
-    }
+        int studentId = (int) session.getAttribute("userId");
+        String targetRole = req.getParameter("targetRole");
+        String instructorId = req.getParameter("instructorId");
+        boolean anonymous = Boolean.parseBoolean(req.getParameter("anonymous"));
+        String message = req.getParameter("message");
 
-    public static ArrayList<Feedback> getFeedbackList(){ return feedbackList; }
+        String sql = """
+            INSERT INTO feedback
+            (student_id, instructor_id, target_role, anonymous, message)
+            VALUES (?, ?, ?, ?, ?)
+        """;
+
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, studentId);
+
+            if (instructorId == null || instructorId.isEmpty()) {
+                ps.setNull(2, java.sql.Types.INTEGER);
+            } else {
+                ps.setInt(2, Integer.parseInt(instructorId));
+            }
+
+            ps.setString(3, targetRole);
+            ps.setBoolean(4, anonymous);
+            ps.setString(5, message);
+
+            ps.executeUpdate();
+
+            resp.sendRedirect("student.jsp?success=true");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendRedirect("student.jsp?error=true");
+        }
+    }
 }

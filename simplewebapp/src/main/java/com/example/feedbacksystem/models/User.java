@@ -1,9 +1,9 @@
 package com.example.feedbacksystem.models;
 
 public class User {
-    private String username;
-    private String password;
-    private String role;
+    final private String username;
+    final private String password;
+    final private String role;
 
     public User(String username, String password, String role){
         this.username = username;
@@ -15,3 +15,4 @@ public class User {
     public String getPassword(){ return password; }
     public String getRole(){ return role; }
 }
+

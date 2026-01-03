@@ -1,73 +1,56 @@
-// package servlets;
-
-// import java.io.IOException;
-// import jakarta.servlet.ServletException;
-// import jakarta.servlet.annotation.WebServlet;
-// import jakarta.servlet.http.HttpServlet;
-// import jakarta.servlet.http.HttpServletRequest;
-// import jakarta.servlet.http.HttpServletResponse;
-// import jakarta.servlet.http.HttpSession;
-
-// @WebServlet("/login")
-// public class LoginServlet extends HttpServlet {
-
-//     @Override
-//     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-//             throws ServletException, IOException {
-
-//         String username = request.getParameter("username");
-//         String password = request.getParameter("password");
-
-//         // simple test login
-//         if ("admin".equals(username) && "admin".equals(password)) {
-//             HttpSession session = request.getSession();
-//             session.setAttribute("user", username);
-//             response.sendRedirect("dashboard.jsp");
-//         } else {
-//             response.sendRedirect("login.jsp?error=true");
-//         }
-//     }
-// }
-
-
 package com.example.feedbacksystem.servlets;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
-import java.util.HashMap;
-import com.example.feedbacksystem.models.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import com.example.feedbacksystem.util.DBUtil;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    public static HashMap<String, User> users = new HashMap<>();
 
     @Override
-    public void init() {
-        users.put("admin", new User("admin","admin","admin"));
-        users.put("instructor", new User("instructor","inst123","instructor"));
-        users.put("student", new User("student","stud123","student"));
-    }
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        String schoolId = req.getParameter("schoolId");
+        String password = req.getParameter("password");
 
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String sql = "SELECT * FROM users WHERE school_id=? AND password=?";
 
-        User user = users.get(username);
-        if(user != null && user.getPassword().equals(password)){
-            HttpSession session = request.getSession();
-            session.setAttribute("user", user);
-            switch(user.getRole()){
-                case "admin" -> response.sendRedirect("admin.jsp");
-                case "instructor" -> response.sendRedirect("instructor.jsp");
-                default -> response.sendRedirect("feedback.jsp");
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, schoolId);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                HttpSession session = req.getSession();
+                session.setAttribute("userId", rs.getInt("id"));
+                session.setAttribute("fullName", rs.getString("full_name"));
+                session.setAttribute("role", rs.getString("role"));
+
+                switch (rs.getString("role")) {
+                    case "STUDENT" -> resp.sendRedirect("student.jsp");
+                    case "INSTRUCTOR" -> resp.sendRedirect("instructor.jsp");
+                    case "DEPARTMENT" -> resp.sendRedirect("department.jsp");
+                    case "AFFAIRS" -> resp.sendRedirect("affairs.jsp");
+                    case "ADMIN" -> resp.sendRedirect("admin");
+                }
+            } else {
+                resp.sendRedirect("login.jsp?error=true");
             }
-        } else {
-            response.sendRedirect("login.jsp?error=true");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

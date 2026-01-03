@@ -1,0 +1,42 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="com.example.feedbacksystem.util.DBUtil" %>
+<%@ include file="header.jsp" %>
+
+<div class="container">
+<h2>Student Affairs – Confidential Cases</h2>
+
+<%
+    Connection con = DBUtil.getConnection();
+    ResultSet rs = con.createStatement().executeQuery(
+        "SELECT * FROM feedback WHERE target_role='AFFAIRS'"
+    );
+
+    while (rs.next()) {
+%>
+
+<div class="card warning">
+<p><b>Status:</b> <%= rs.getString("status") %></p>
+<p><b>Message:</b> <%= rs.getString("message") %></p>
+
+<form action="affairs" method="post">
+<textarea name="response" required></textarea>
+<input type="hidden" name="feedbackId" value="<%= rs.getInt("id") %>">
+<button type="submit">Close Case</button>
+</form>
+</div>
+
+<% } con.close(); %>
+</div>
+<style>
+    .card.warning {
+        background-color: #ffcc00;
+    }
+.container { max-width:800px; margin:30px auto; font-family:Arial, sans-serif; }
+h2 { color:#003366; }
+h3 { margin-bottom:15px; }
+.card { background:#fff; padding:20px; border-radius:6px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
+.warning { border-left:5px solid red; }
+textarea, select, button { width:100%; margin-top:10px; padding:8px; }
+button { margin-top:15px; padding:10px 15px; background:#003366; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+button:hover { background:#002244; }
+</style>
