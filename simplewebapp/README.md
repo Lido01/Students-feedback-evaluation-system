@@ -1,73 +1,95 @@
+# 🎓 Student Feedback System
 
-
-School ID formats (enforced in UI / logic)
-Role	Example
-Student	UGR/00001/16
-Instructor	INS/0004
-Department	DEP/SCI
-Affairs	AFF/01
-Admin	ADM/001
-
-# Student Feedback System
-
-A **Java web application** for managing student academic feedback with role-based access for students, instructors, department heads, student affairs, and administrators. Built using **Jakarta Servlet API**, **JSP**, **MySQL**, and **CSS styling**.
+A **Java-based web application** designed to manage academic feedback in an educational institution.  
+The system supports **role-based access control** for students, instructors, department heads, student affairs, and administrators.  
+Built using **Jakarta Servlet API, JSP, MySQL, Maven, and Apache Tomcat**, following **MVC principles**.
 
 ---
 
-## Table of Contents
+## 📌 Project Objectives
 
-- [Features](#features)  
-- [Roles & Permissions](#roles--permissions)  
-- [Folder Structure](#folder-structure)  
-- [Database Design](#database-design)  
-- [Installation & Setup](#installation--setup)  
-- [Usage](#usage)  
-- [Technologies Used](#technologies-used)  
-- [Future Improvements](#future-improvements)
+- Enable students to submit academic feedback securely
+- Provide structured workflows for handling feedback
+- Implement role-based dashboards and permissions
+- Store and manage feedback data persistently
+- Practice Java web development using Servlets and JSP
+- Apply MVC architecture and session management
 
 ---
 
-## Features
+## ✨ Key Features
 
-- **User Authentication**
-  - Register with school ID, full name, email, mobile number, role, password, confirm password
-  - Login using school ID and password
-  - Logout functionality
-  - Role-based redirection and navigation
-- **Role-based Dashboards**
-  - **Student**: Submit feedback (named or anonymous), view instructor responses
-  - **Instructor**: View feedback from students, respond to feedback, forward feedback to departments
-  - **Department Head**: View instructor or course feedback, manage internal actions
-  - **Student Affairs**: Handle sensitive feedback (harassment, confidential cases)
-  - **Admin**: Manage users, roles, feedback, generate reports, system settings, backup
-- **Feedback Workflow**
-  - Status: Pending, Completed, Declined
-  - Responses from instructors or departments
-- **Modern UI**
-  - Styled JSP pages with CSS
-  - Header shows logged-in user, role, and role-based navigation
-- **Persistence**
-  - MySQL backend
-  - Stores users, feedback, roles, and responses
-- **Session Management**
-  - Role-based access
-  - Logout invalidates session
+### 🔐 Authentication & Authorization
+- User registration with role-specific School ID formats
+- Secure login and logout
+- Session-based authentication
+- Role-based access control and redirection
 
----
+### 🧑‍💼 Role-Based Dashboards
+- **Student**: Submit feedback (anonymous or named), view responses
+- **Instructor**: View student feedback, respond, escalate to department
+- **Department Head**: Handle escalated feedback
+- **Student Affairs**: Manage sensitive and confidential cases
+- **Admin**: Manage users, feedback, system configuration, and reports
 
-## Roles & Permissions
+### 📝 Feedback Management
+- Submit feedback with comments and optional anonymity
+- Feedback workflow with status tracking:
+  - `PENDING`
+  - `COMPLETED`
+  - `DECLINED`
+- Instructor and department responses
+- Escalation mechanism for unresolved feedback
 
-| Role          | Dashboard Page     | Permissions |
-|---------------|-----------------|-------------|
-| Student       | `student.jsp`    | Submit feedback, view responses |
-| Instructor    | `instructor.jsp` | View feedback, respond, forward |
-| Department    | `department.jsp` | View forwarded feedback, internal actions |
-| Student Affairs | `affairs.jsp` | Handle sensitive feedback, manage cases |
-| Admin         | `admin.jsp`      | Manage users, feedback, reports, system settings |
+### 🎨 User Interface
+- JSP-based views
+- Central header with role-based navigation
+- Clean and consistent CSS styling
+
+### 💾 Persistence & Sessions
+- MySQL database backend
+- Stores users, roles, feedback, and responses
+- Session invalidation on logout
 
 ---
 
-## Folder Structure
+## 🛠️ Technologies Used
+
+- Java (JDK 21)
+- Jakarta Servlet API
+- JSP
+- Maven
+- Apache Tomcat 10.1
+- MySQL
+- HTML & CSS
+
+---
+
+## 👥 Roles & Permissions
+
+| Role            | Dashboard Path                  | Permissions |
+|-----------------|----------------------------------|------------|
+| Student         | `/student/dashboard.jsp`         | Submit feedback, view responses |
+| Instructor      | `/instructor/dashboard.jsp`      | View & respond to feedback, escalate |
+| Department Head | `/department/dashboard.jsp`      | Handle forwarded feedback |
+| Student Affairs | `/affairs/dashboard.jsp`         | Manage sensitive cases |
+| Admin           | `/admin/dashboard.jsp`           | User & feedback management |
+
+---
+
+## 🆔 School ID Formats
+
+| Role        | Format Example |
+|------------|----------------|
+| Student    | `UGR/00001/16` |
+| Instructor | `INS/0004` |
+| Department | `DEP/SCI` |
+| Affairs    | `AFF/01` |
+| Admin      | `ADM/001` |
+
+---
+
+## 📂 Folder Structure
 
 StudentFeedbackSystem/
 │── pom.xml
@@ -88,106 +110,108 @@ StudentFeedbackSystem/
     │   │   └── AdminServlet.java
     │
     └── webapp/
-        ├── css/style.css
+        ├── css/
+        │   └── style.css
         ├── login.jsp
         ├── register.jsp
         ├── header.jsp
-        ├── student/
-        │   └── dashboard.jsp
-        ├── instructor/
-        │   └── dashboard.jsp
-        ├── department/
-        │   └── dashboard.jsp
-        ├── affairs/
-        │   └── dashboard.jsp
-        └── admin/
-            └── dashboard.jsp
+        ├── student/dashboard.jsp
+        ├── instructor/dashboard.jsp
+        ├── department/dashboard.jsp
+        ├── affairs/dashboard.jsp
+        └── admin/dashboard.jsp
+
 
 
 
 ---
 
-## Database Design (MySQL)
+## 🗄️ Database Design (MySQL)
 
-### Tables
+### users Table
 
-#### users
-| Column       | Type         | Description |
-|-------------|-------------|------------|
-| id          | INT PK AI    | Auto increment ID |
-| school_id   | VARCHAR(20)  | School formatted ID (UGR/00001/16) |
-| full_name   | VARCHAR(100) | Full name |
-| email       | VARCHAR(100) | Email |
-| mobile      | VARCHAR(15)  | Mobile number |
-| role        | ENUM         | `STUDENT`, `INSTRUCTOR`, `DEPARTMENT`, `AFFAIRS`, `ADMIN` |
-| password    | VARCHAR(255) | Hashed password |
-
-#### feedback
-| Column       | Type         | Description |
-|-------------|-------------|------------|
-| id          | INT PK AI    | Feedback ID |
-| student_id  | INT FK users | Student who submitted |
-| teacher_id  | INT FK users | Instructor related (nullable for admin) |
-| target_role | ENUM         | Recipient role (`INSTRUCTOR`, `DEPARTMENT`, `AFFAIRS`) |
-| anonymous   | BOOLEAN      | True if anonymous |
-| message     | TEXT         | Feedback content |
-| status      | ENUM         | `PENDING`, `COMPLETED`, `DECLINED` |
-| response    | TEXT         | Response message by instructor or admin |
-| created_at  | TIMESTAMP    | Submission time |
+| Column | Type | Description |
+|------|------|------------|
+| id | INT (PK, AI) | User ID |
+| school_id | VARCHAR(20) | Unique institutional ID |
+| full_name | VARCHAR(100) | User full name |
+| email | VARCHAR(100) | Unique email |
+| mobile | VARCHAR(15) | Mobile number |
+| role | ENUM | User role |
+| password | VARCHAR(255) | Hashed password |
 
 ---
 
-## Installation & Setup
+### feedback Table
 
-1. **Install Java 21**  
-2. **Install Apache Tomcat 10.1**  
-3. **Install MySQL**  
-4. **Create Database**
-```sql
-CREATE DATABASE feedback_system;
+| Column | Type | Description |
+|------|------|------------|
+| id | INT (PK, AI) | Feedback ID |
+| student_id | INT (FK) | Student user ID |
+| teacher_id | INT (FK) | Instructor user ID |
+| target_role | ENUM | Feedback recipient |
+| anonymous | BOOLEAN | Anonymous flag |
+| message | TEXT | Feedback message |
+| status | ENUM | Feedback status |
+| response | TEXT | Response message |
+| created_at | TIMESTAMP | Submission time |
 
-USE feedback_system;
+---
 
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    school_id VARCHAR(20) UNIQUE NOT NULL,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    mobile VARCHAR(15),
-    role ENUM('STUDENT','INSTRUCTOR','DEPARTMENT','AFFAIRS','ADMIN') NOT NULL,
-    password VARCHAR(255) NOT NULL
-);
+## ⚙️ Installation & Setup
 
-CREATE TABLE feedback (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    student_id INT NOT NULL,
-    teacher_id INT,
-    target_role ENUM('INSTRUCTOR','DEPARTMENT','AFFAIRS'),
-    anonymous BOOLEAN DEFAULT FALSE,
-    message TEXT NOT NULL,
-    status ENUM('PENDING','COMPLETED','DECLINED') DEFAULT 'PENDING',
-    response TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (student_id) REFERENCES users(id),
-    FOREIGN KEY (teacher_id) REFERENCES users(id)
-);
+### Prerequisites
+- Java 21
+- Apache Tomcat 10.1
+- MySQL Server
+- Maven
 
+### Steps
 
-Configure DBUtil.java with your MySQL credentials
-
-Add JSTL JARs to WEB-INF/lib for Tomcat 10.1:
-
-jakarta.servlet.jsp.jstl-api-3.0.0.jar
-
-jakarta.servlet.jsp.jstl-3.0.1.jar
-
-Build WAR file
-
+1. Clone or download the project
+2. Create database and tables
+3. Configure database credentials in `DBUtil.java`
+4. Add JSTL libraries to `WEB-INF/lib`
+5. Build the project:
+```bash
 mvn clean package
 
+### Deploy the WAR file to Tomcat webapps/
 
-Deploy WAR to Tomcat webapps/ folder
+Start Tomcat server
 
-Start Tomcat and access:
+Access the application:
 
 http://localhost:8080/StudentFeedbackSystem/login.jsp
+
+🧩 Application Modules
+
+Authentication Module (Login, Register, Logout)
+
+Student Module (Feedback submission and tracking)
+
+Instructor Module (Feedback review and response)
+
+Department Module (Escalation handling)
+
+Affairs Module (Sensitive case management)
+
+Admin Module (User and system management)
+
+Utility Layer (Database connectivity)
+
+🚀 Future Improvements
+
+Password hashing with BCrypt
+
+Pagination and filtering
+
+Email notifications
+
+File attachments
+
+REST API support
+
+UI enhancement using Bootstrap
+
+Analytics and reports
