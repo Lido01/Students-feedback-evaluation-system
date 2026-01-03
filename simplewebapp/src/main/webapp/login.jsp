@@ -1,56 +1,55 @@
-<!-- 
-<%@ page session="false" %>
+<%@ page session="true" %>
+<%@ include file="header.jsp" %>
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Main stylesheet -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="container">
+
 <h2>Login</h2>
 
-<% String error = request.getParameter("error"); %>
+<%
+    /*
+     * Read query parameters sent by LoginServlet
+     * error=invalid    → wrong username or password
+     * success=registered → user just registered successfully
+     */
+    String error = request.getParameter("error");
+    String success = request.getParameter("success");
+%>
+
+<!-- Error message -->
 <% if ("invalid".equals(error)) { %>
-    <p style="color:red;">Invalid username or password!</p>
+    <p class="error">Invalid username or password.</p>
 <% } %>
-<% String success = request.getParameter("success"); %>
+
+<!-- Success message after registration -->
 <% if ("registered".equals(success)) { %>
-    <p style="color:green;">Registration successful! Login now.</p>
+    <p class="success">Registration successful. Please log in.</p>
 <% } %>
 
+<!-- Login form -->
 <form action="login" method="post">
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-</form>
 
-<p>New user? <a href="register.jsp">Register here</a></p>
-</div>
-</body>
-</html> -->
-
-<%@ page session="true" %>
-<%@ include file="header.jsp" %>
-<html>
-<head>
-<link rel="stylesheet" href="css/style.css">
-<title>Login</title>
-</head>
-<body>
-<h2>Login</h2>
-<% if(request.getParameter("error") != null){ %>
-    <p class="error">Invalid username or password</p>
-<% } %>
-<form action="login" method="post">
+    <!-- Username field -->
     <label>Username:</label><br>
     <input type="text" name="username" required><br><br>
+
+    <!-- Password field -->
     <label>Password:</label><br>
     <input type="password" name="password" required><br><br>
+
     <button type="submit">Login</button>
 </form>
-<p>New user? <a href="register.jsp">Register here</a></p>
+
+<p>
+    New user?
+    <a href="register.jsp">Register here</a>
+</p>
+
 </body>
 </html>
-
-
