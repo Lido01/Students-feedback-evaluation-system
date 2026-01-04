@@ -3,6 +3,7 @@
 <%@ page import="com.example.feedbacksystem.models.User" %>
 
 <%
+
     User user = (User) session.getAttribute("user");
     if (user == null || !"student".equals(user.getRole())) {
         response.sendRedirect("login.jsp");
