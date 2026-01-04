@@ -27,7 +27,7 @@
 <%@ page import="com.example.feedbacksystem.util.DBUtil" %>
 <%@ include file="header.jsp" %>
 
-<div class="container">
+<div class="container"></div>
 ...
 
 
