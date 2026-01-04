@@ -1,18 +1,60 @@
 package com.example.feedbacksystem.servlets;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import com.example.feedbacksystem.util.DBUtil;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/instructor")
 public class InstructorServlet extends HttpServlet {
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
 
-        request.setAttribute("feedbacks", FeedbackServlet.getFeedbackList());
-        RequestDispatcher dispatcher = request.getRequestDispatcher("instructor.jsp");
-        dispatcher.forward(request,response);
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+
+        int feedbackId = Integer.parseInt(req.getParameter("feedbackId"));
+        String responseText = req.getParameter("response");
+        String action = req.getParameter("action"); // null or ESCALATE
+
+        HttpSession session = req.getSession();
+        int instructorId = (int) session.getAttribute("userId");
+
+        try (Connection con = DBUtil.getConnection()) {
+
+            // 1️⃣ Save response
+            String insertResponse =
+                "INSERT INTO feedback_responses (feedback_id, responder_id, responder_role, response) " +
+                "VALUES (?, ?, 'INSTRUCTOR', ?)";
+
+            PreparedStatement ps1 = con.prepareStatement(insertResponse);
+            ps1.setInt(1, feedbackId);
+            ps1.setInt(2, instructorId);
+            ps1.setString(3, responseText);
+            ps1.executeUpdate();
+
+            // 2️⃣ Update status
+            String updateStatus;
+            if ("ESCALATE".equals(action)) {
+                updateStatus = "UPDATE feedback SET status='ESCALATED', target_role='DEPARTMENT' WHERE id=?";
+            } else {
+                updateStatus = "UPDATE feedback SET status='RESPONDED' WHERE id=?";
+            }
+
+            PreparedStatement ps2 = con.prepareStatement(updateStatus);
+            ps2.setInt(1, feedbackId);
+            ps2.executeUpdate();
+
+            resp.sendRedirect("instructor.jsp");
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
