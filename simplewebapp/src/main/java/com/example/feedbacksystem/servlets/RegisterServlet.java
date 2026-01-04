@@ -1,43 +1,41 @@
-/*
-    Name: Dagmawi Wondwosen
-    ID: Ugr/34184/16
-    I tried to create the backend for the registration page I pushed (register.jsp). 
-    The servlet handles the POST request when the user submits the form. 
-    I tried to check if the username already exists and redirect to login if successful. 
-    I am still learning, so maybe there are small things that could be improved.
-*/
-
 package com.example.feedbacksystem.servlets;
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
-import com.example.feedbacksystem.models.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import com.example.feedbacksystem.util.DBUtil;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
 
-        
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        String sql = "INSERT INTO users (school_id, full_name, email, phone, role, password) VALUES (?,?,?,?,?,?)";
 
-        
-        if(LoginServlet.users.containsKey(username)){ 
-            
-            response.sendRedirect("register.jsp?error=exists");
-        } else {
-            
-            LoginServlet.users.put(username, new User(username, password, "student"));
-            
-            response.sendRedirect("login.jsp?success=registered");
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, req.getParameter("schoolId"));
+            ps.setString(2, req.getParameter("fullName"));
+            ps.setString(3, req.getParameter("email"));
+            ps.setString(4, req.getParameter("phone"));
+            ps.setString(5, req.getParameter("role"));
+            ps.setString(6, req.getParameter("password"));
+
+            ps.executeUpdate();
+            resp.sendRedirect("login.jsp?registered=true");
+
+        } catch (Exception e) {
+            throw new RuntimeException("Registration failed", e);
         }
-
-        // I tried to connect this with the register.jsp page I just pushed
-        // The form action in JSP points here, so they work together
     }
 }
+
