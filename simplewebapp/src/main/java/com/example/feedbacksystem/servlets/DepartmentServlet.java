@@ -15,70 +15,93 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/department")
 public class DepartmentServlet extends HttpServlet {
 
-    private static final String ROLE_DEPARTMENT = "DEPARTMENT";
-    private static final String ROLE_AFFAIRS = "AFFAIRS";
-    private static final String ACTION_FORWARD = "FORWARD";
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
-        // --- Read parameters ---
         String feedbackIdParam = req.getParameter("feedbackId");
         String responseText = req.getParameter("response");
-        String action = req.getParameter("action");
 
-        if (feedbackIdParam == null || responseText == null) {
-            resp.sendRedirect("department.jsp");
+        if (feedbackIdParam == null || responseText == null || responseText.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request data");
             return;
         }
 
-        int feedbackId = Integer.parseInt(feedbackIdParam);
+        int feedbackId;
+        try {
+            feedbackId = Integer.parseInt(feedbackIdParam);
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid feedback ID");
+            return;
+        }
+
+        String action = req.getParameter("action");
 
         HttpSession session = req.getSession(false);
+        if (session == null
+                || session.getAttribute("userId") == null
+                || session.getAttribute("userRole") == null) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Session expired");
+            return;
+        }
+
+        // 🔒 Role-based authorization
+        String userRole = session.getAttribute("userRole").toString();
+        if (!"DEPARTMENT".equals(userRole)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
+            return;
+        }
+
         int departmentUserId = (int) session.getAttribute("userId");
 
-        try (Connection con = DBUtil.getConnection()) {
+        Connection con = null;
+        try {
+            con = DBUtil.getConnection();
+            con.setAutoCommit(false);
 
             // 1️⃣ Save department response
-            String insertResponseSql =
-                "INSERT INTO feedback_responses " +
-                "(feedback_id, responder_id, responder_role, response) " +
-                "VALUES (?, ?, ?, ?)";
+            String insertResponse =
+                "INSERT INTO feedback_responses (feedback_id, responder_id, responder_role, response) " +
+                "VALUES (?, ?, 'DEPARTMENT', ?)";
 
-            try (PreparedStatement ps = con.prepareStatement(insertResponseSql)) {
-                ps.setInt(1, feedbackId);
-                ps.setInt(2, departmentUserId);
-                ps.setString(3, ROLE_DEPARTMENT);
-                ps.setString(4, responseText);
-                ps.executeUpdate();
+            try (PreparedStatement ps1 = con.prepareStatement(insertResponse)) {
+                ps1.setInt(1, feedbackId);
+                ps1.setInt(2, departmentUserId);
+                ps1.setString(3, responseText);
+                ps1.executeUpdate();
             }
 
-            // 2️⃣ Update feedback status & routing
-            String updateFeedbackSql;
-
-            if (ACTION_FORWARD.equals(action)) {
-                updateFeedbackSql =
-                    "UPDATE feedback SET status='ESCALATED', target_role=? WHERE id=?";
+            // 2️⃣ Update feedback routing
+            String updateStatus;
+            if ("FORWARD".equals(action)) {
+                updateStatus =
+                    "UPDATE feedback SET status='ESCALATED', target_role='AFFAIRS' WHERE id=?";
             } else {
-                updateFeedbackSql =
+                updateStatus =
                     "UPDATE feedback SET status='CLOSED' WHERE id=?";
             }
 
-            try (PreparedStatement ps = con.prepareStatement(updateFeedbackSql)) {
-                if (ACTION_FORWARD.equals(action)) {
-                    ps.setString(1, ROLE_AFFAIRS);
-                    ps.setInt(2, feedbackId);
-                } else {
-                    ps.setInt(1, feedbackId);
-                }
-                ps.executeUpdate();
+            try (PreparedStatement ps2 = con.prepareStatement(updateStatus)) {
+                ps2.setInt(1, feedbackId);
+                ps2.executeUpdate();
             }
 
+            con.commit();
             resp.sendRedirect("department.jsp");
 
         } catch (Exception e) {
-            throw new RuntimeException("Error processing department feedback", e);
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (Exception ignored) {}
+            }
+            throw new RuntimeException(e);
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (Exception ignored) {}
+            }
         }
     }
 }

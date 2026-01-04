@@ -1,24 +1,48 @@
 <%@ page session="true" %>
 <%@ include file="header.jsp" %>
 <%@ page import="java.util.*,com.example.feedbacksystem.models.Feedback"%>
+
+<!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" href="css/style.css">
-<title>Instructor Dashboard</title>
+    <title>Instructor Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-<h2>Instructor Dashboard - Feedback Received</h2>
-<%
-    List<Feedback> feedbacks = (List<Feedback>) request.getAttribute("feedbacks");
-    if(feedbacks == null || feedbacks.isEmpty()){
-%>
-    <p>No feedback yet.</p>
-<% } else { %>
-    <ul>
-    <% for(Feedback f: feedbacks){ %>
-        <li><strong><%= f.getStudentName() %>:</strong> <%= f.getMessage() %></li>
-    <% } %>
-    </ul>
-<% } %>
+
+<div class="dashboard-container">
+
+    <div class="dashboard-header">
+        <h2>Instructor Dashboard</h2>
+        <p class="subtitle">Feedback Received</p>
+    </div>
+
+    <div class="feedback-section">
+        <%
+            List<Feedback> feedbacks = (List<Feedback>) request.getAttribute("feedbacks");
+            if (feedbacks == null || feedbacks.isEmpty()) {
+        %>
+            <div class="empty-state">
+                <p>No feedback yet.</p>
+            </div>
+        <%
+            } else {
+        %>
+            <div class="feedback-list">
+                <% for (Feedback f : feedbacks) { %>
+                    <div class="feedback-card">
+                        <p class="student-name"><strong><%= f.getStudentName() %></strong></p>
+                        <p class="feedback-message"><%= f.getMessage() %></p>
+                    </div>
+                <% } %>
+            </div>
+        <%
+            }
+        %>
+    </div>
+
+</div>
+
 </body>
 </html>

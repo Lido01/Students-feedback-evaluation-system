@@ -1,168 +1,84 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="com.example.feedbacksystem.util.DBUtil" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="header.jsp" %>
 
 <div class="container">
-    <h2>Department Dashboard</h2>
-    <p class="subtitle">Feedback cases assigned to the department</p>
+<h2>Department Dashboard</h2>
 
 <%
-    Connection con = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
+    String sql =
+        "SELECT * FROM feedback WHERE target_role='DEPARTMENT'";
 
-    try {
-        con = DBUtil.getConnection();
-        String sql = "SELECT * FROM feedback WHERE target_role='DEPARTMENT'";
-        ps = con.prepareStatement(sql);
-        rs = ps.executeQuery();
+    try (
+        Connection con = DBUtil.getConnection();
+        PreparedStatement ps = con.prepareStatement(sql);
+        ResultSet rs = ps.executeQuery();
+    ) {
+
+        boolean hasResults = false;
 
         while (rs.next()) {
-            String status = rs.getString("status");
+            hasResults = true;
+
+            int feedbackId = rs.getInt("id");
+            request.setAttribute("message", rs.getString("message"));
+            request.setAttribute("status", rs.getString("status"));
 %>
 
-    <div class="card">
-        <div class="card-header">
-            <span class="badge <%= status %>"><%= status %></span>
-        </div>
+<div class="card">
+    <p>
+        <b>Message:</b>
+        <c:out value="${message}" />
+    </p>
 
-        <p class="message">
-            <strong>Message:</strong><br>
-            <%= rs.getString("message") %>
-        </p>
+    <p>
+        <b>Status:</b>
+        <c:out value="${status}" />
+    </p>
 
-        <form action="department" method="post">
-            <label for="response-<%= rs.getInt("id") %>">Response</label>
-            <textarea
-                id="response-<%= rs.getInt("id") %>"
-                name="response"
-                placeholder="Write your response here..."
-                required></textarea>
+    <form action="department" method="post">
+        <label for="response-<%= feedbackId %>">Response</label>
+        <textarea
+            id="response-<%= feedbackId %>"
+            name="response"
+            required>
+        </textarea>
 
-            <input type="hidden" name="feedbackId" value="<%= rs.getInt("id") %>">
+        <input type="hidden" name="feedbackId" value="<%= feedbackId %>">
 
-            <div class="actions">
-                <button type="submit" class="btn primary">
-                    Close Case
-                </button>
-
-                <button
-                    type="submit"
-                    name="action"
-                    value="FORWARD"
-                    class="btn secondary">
-                    Forward to Affairs
-                </button>
-            </div>
-        </form>
-    </div>
+        <button type="submit">Close Case</button>
+        <button type="submit" name="action" value="FORWARD">
+            Forward to Affairs
+        </button>
+    </form>
+</div>
 
 <%
         }
-    } finally {
-        if (rs != null) rs.close();
-        if (ps != null) ps.close();
-        if (con != null) con.close();
+
+        if (!hasResults) {
+%>
+    <p class="subtitle">No feedback available for the department.</p>
+<%
+        }
     }
 %>
 </div>
 
 <style>
-/* Layout */
-.container {
-    max-width: 800px;
-    margin: 30px auto;
-    font-family: Arial, sans-serif;
-}
-
-h2 {
-    color: #003366;
-}
-
-.subtitle {
-    color: #666;
-    margin-bottom: 25px;
-}
-
-/* Cards */
-.card {
-    background: #fff;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-}
-
-.card-header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
-}
-
-.message {
-    margin-bottom: 15px;
-    line-height: 1.5;
-}
-
-/* Status badges */
-.badge {
-    padding: 5px 10px;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.PENDING { background: #f0ad4e; }
-.COMPLETED { background: #5cb85c; }
-.DECLINED { background: #d9534f; }
-
-/* Form */
-form label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-form textarea {
-    width: 100%;
-    min-height: 90px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: vertical;
-}
-
-/* Buttons */
-.actions {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-}
-
-.btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.btn.primary {
-    background: #003366;
-    color: #fff;
-}
-
-.btn.primary:hover {
-    background: #002244;
-}
-
-.btn.secondary {
-    background: #6c757d;
-    color: #fff;
-}
-
-.btn.secondary:hover {
-    background: #5a6268;
-}
+.container { max-width:800px; margin:30px auto; font-family:Arial, sans-serif; }
+h2 { color:#003366; }
+h3 { margin-bottom:15px; }
+.subtitle { color:#666; margin-bottom:25px; }
+.section-title { margin-top:30px; border-bottom:2px solid #003366; }
+.card { background:#fff; padding:20px; margin-bottom:15px; border-radius:6px; }
+.badge { padding:4px 8px; border-radius:4px; color:#fff; }
+.PENDING { background:#f0ad4e; }
+.COMPLETED { background:#5cb85c; }
+.DECLINED { background:#d9534f; }
+form label { display:block; margin-top:10px; }
+form select, form textarea { width:100%; padding:8px; margin-top:5px; border:1px solid #ccc; border-radius:4px; }
+.btn { margin-top:15px; padding:10px 15px; background:#003366; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+.btn:hover { background:#002244; }
 </style>
