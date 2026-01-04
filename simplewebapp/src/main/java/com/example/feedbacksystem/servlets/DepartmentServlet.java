@@ -33,11 +33,12 @@ public class DepartmentServlet extends HttpServlet {
                 "INSERT INTO feedback_responses (feedback_id, responder_id, responder_role, response) " +
                 "VALUES (?, ?, 'DEPARTMENT', ?)";
 
-            PreparedStatement ps1 = con.prepareStatement(insertResponse);
-            ps1.setInt(1, feedbackId);
-            ps1.setInt(2, departmentUserId);
-            ps1.setString(3, responseText);
-            ps1.executeUpdate();
+            try (PreparedStatement ps1 = con.prepareStatement(insertResponse)) {
+                ps1.setInt(1, feedbackId);
+                ps1.setInt(2, departmentUserId);
+                ps1.setString(3, responseText);
+                ps1.executeUpdate();
+            }
 
             // 2️⃣ Update feedback routing
             String updateStatus;
@@ -49,9 +50,10 @@ public class DepartmentServlet extends HttpServlet {
                     "UPDATE feedback SET status='CLOSED' WHERE id=?";
             }
 
-            PreparedStatement ps2 = con.prepareStatement(updateStatus);
-            ps2.setInt(1, feedbackId);
-            ps2.executeUpdate();
+            try (PreparedStatement ps2 = con.prepareStatement(updateStatus)) {
+                ps2.setInt(1, feedbackId);
+                ps2.executeUpdate();
+            }
 
             resp.sendRedirect("department.jsp");
 
