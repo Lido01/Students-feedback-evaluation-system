@@ -1,5 +1,6 @@
 <%@ page import="java.sql.*" %>
 <%@ page import="com.example.feedbacksystem.util.DBUtil" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="header.jsp" %>
 
 <div class="container">
@@ -19,11 +20,21 @@
 
         while (rs.next()) {
             hasResults = true;
+
+            request.setAttribute("message", rs.getString("message"));
+            request.setAttribute("status", rs.getString("status"));
 %>
 
 <div class="card">
-    <p><b>Message:</b> <%= rs.getString("message") %></p>
-    <p><b>Status:</b> <%= rs.getString("status") %></p>
+    <p>
+        <b>Message:</b>
+        <c:out value="${message}" />
+    </p>
+
+    <p>
+        <b>Status:</b>
+        <c:out value="${status}" />
+    </p>
 
     <form action="department" method="post">
         <textarea name="response" required></textarea>
