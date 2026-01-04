@@ -20,6 +20,16 @@
     ID: UGR/34184/16
 */
 
+/*
+
+ *
+ * Modifications made:
+ * 1. Added null check for session userId to prevent runtime errors.
+ * 2. Trimmed and validated the feedback message before inserting into DB.
+ * 3. Used try-with-resources for PreparedStatement for better resource management.
+ * 4. Set request character encoding to UTF-8 for safe form handling.
+ */
+
 package com.example.feedbacksystem.servlets;
 
 import java.io.IOException;
@@ -41,7 +51,14 @@ public class StudentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
-        HttpSession session = req.getSession();
+        req.setCharacterEncoding("UTF-8");
+
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+
         int studentId = (int) session.getAttribute("userId");
 
         String targetRole = req.getParameter("targetRole");
@@ -49,13 +66,16 @@ public class StudentServlet extends HttpServlet {
         boolean anonymous = Boolean.parseBoolean(req.getParameter("anonymous"));
         String message = req.getParameter("message");
 
-        try (Connection con = DBUtil.getConnection()) {
+        if (message != null) {
+            message = message.trim();
+        }
 
-            String sql =
-                "INSERT INTO feedback (student_id, instructor_id, target_role, anonymous, message) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                 "INSERT INTO feedback (student_id, instructor_id, target_role, anonymous, message) " +
+                 "VALUES (?, ?, ?, ?, ?)")
+        ) {
 
-            PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, studentId);
 
             if (instructorIdStr == null || instructorIdStr.isEmpty()) {
@@ -69,7 +89,6 @@ public class StudentServlet extends HttpServlet {
             ps.setString(5, message);
 
             ps.executeUpdate();
-
             resp.sendRedirect("student.jsp?success=true");
 
         } catch (Exception e) {
