@@ -1,52 +1,48 @@
 package com.example.feedbacksystem.servlets;
 
-import jakarta.servlet.RequestDispatcher;
-import jakarta.servlet.ServletException;
+import com.example.feedbacksystem.util.DBUtil;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-
-import com.example.feedbacksystem.models.User;
+import java.sql.*;
 
 @WebServlet("/admin")
 public class AdminServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        /* 1. Session validation */
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("loggedUser") == null) {
-            response.sendRedirect("login.jsp");
-            return;
+        try (Connection con = DBUtil.getConnection()) {
+
+            req.setAttribute("totalUsers", getCount(con, "users"));
+            req.setAttribute("students", getCount(con, "users WHERE role='STUDENT'"));
+            req.setAttribute("instructors", getCount(con, "users WHERE role='INSTRUCTOR'"));
+            req.setAttribute("departments", getCount(con, "users WHERE role='DEPARTMENT'"));
+            req.setAttribute("affairs", getCount(con, "users WHERE role='AFFAIRS'"));
+
+            req.setAttribute("totalFeedback", getCount(con, "feedback"));
+            req.setAttribute("pending", getCount(con, "feedback WHERE status='PENDING'"));
+            req.setAttribute("responded", getCount(con, "feedback WHERE status='RESPONDED'"));
+            req.setAttribute("escalated", getCount(con, "feedback WHERE status='ESCALATED'"));
+            req.setAttribute("closed", getCount(con, "feedback WHERE status='CLOSED'"));
+
+            RequestDispatcher rd = req.getRequestDispatcher("admin.jsp");
+            rd.forward(req, resp);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+    }
 
-        /* 2. Authorization check */
-        User loggedUser = (User) session.getAttribute("loggedUser");
-        if (!"admin".equalsIgnoreCase(loggedUser.getRole())) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
-            return;
-        }
+    private int getCount(Connection con, String table)
+            throws SQLException {
 
-        /* 3. Safe user retrieval */
-        Collection<User> users = Collections.emptyList();
-        if (LoginServlet.users != null) {
-            users = LoginServlet.users.values();
-        }
-
-        /* 4. Attach data to request scope */
-        request.setAttribute("users", users);
-
-        /* 5. Forward using absolute path */
-        RequestDispatcher dispatcher =
-                request.getRequestDispatcher("/admin.jsp");
-        dispatcher.forward(request, response);
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + table);
+        rs.next();
+        return rs.getInt(1);
     }
 }
