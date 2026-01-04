@@ -16,33 +16,42 @@ import jakarta.servlet.http.HttpSession;
 public class AffairsServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
-        int feedbackId = Integer.parseInt(req.getParameter("feedbackId"));
-        String responseText = req.getParameter("response");
+        int feedbackId = Integer.parseInt(request.getParameter("feedbackId"));
+        String responseText = request.getParameter("response");
 
-        HttpSession session = req.getSession();
+        HttpSession session = request.getSession();
         int affairsId = (int) session.getAttribute("userId");
 
-        try (Connection con = DBUtil.getConnection()) {
-
-            String insert =
-                "INSERT INTO feedback_responses (feedback_id, responder_id, responder_role, response) " +
+        String insertResponseSql =
+                "INSERT INTO feedback_responses " +
+                "(feedback_id, responder_id, responder_role, response) " +
                 "VALUES (?, ?, 'AFFAIRS', ?)";
 
-            PreparedStatement ps1 = con.prepareStatement(insert);
-            ps1.setInt(1, feedbackId);
-            ps1.setInt(2, affairsId);
-            ps1.setString(3, responseText);
-            ps1.executeUpdate();
+        String updateStatusSql =
+                "UPDATE feedback SET status = 'CLOSED' WHERE id = ?";
 
-            PreparedStatement ps2 =
-                con.prepareStatement("UPDATE feedback SET status='CLOSED' WHERE id=?");
-            ps2.setInt(1, feedbackId);
-            ps2.executeUpdate();
+        try (Connection connection = DBUtil.getConnection()) {
 
-            resp.sendRedirect("affairs.jsp");
+            try (PreparedStatement insertStmt =
+                         connection.prepareStatement(insertResponseSql)) {
+
+                insertStmt.setInt(1, feedbackId);
+                insertStmt.setInt(2, affairsId);
+                insertStmt.setString(3, responseText);
+                insertStmt.executeUpdate();
+            }
+
+            try (PreparedStatement updateStmt =
+                         connection.prepareStatement(updateStatusSql)) {
+
+                updateStmt.setInt(1, feedbackId);
+                updateStmt.executeUpdate();
+            }
+
+            response.sendRedirect("affairs.jsp");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
