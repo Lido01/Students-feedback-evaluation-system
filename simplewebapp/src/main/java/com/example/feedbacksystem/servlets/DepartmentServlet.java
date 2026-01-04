@@ -19,11 +19,31 @@ public class DepartmentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
-        int feedbackId = Integer.parseInt(req.getParameter("feedbackId"));
+        // 🔒 Basic input validation
+        String feedbackIdParam = req.getParameter("feedbackId");
         String responseText = req.getParameter("response");
+
+        if (feedbackIdParam == null || responseText == null || responseText.isBlank()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request data");
+            return;
+        }
+
+        int feedbackId;
+        try {
+            feedbackId = Integer.parseInt(feedbackIdParam);
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid feedback ID");
+            return;
+        }
+
         String action = req.getParameter("action"); // FORWARD or null
 
-        HttpSession session = req.getSession();
+        HttpSession session = req.getSession(false);
+        if (session == null || session.getAttribute("userId") == null) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Session expired");
+            return;
+        }
+
         int departmentUserId = (int) session.getAttribute("userId");
 
         try (Connection con = DBUtil.getConnection()) {
