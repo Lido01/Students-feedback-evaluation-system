@@ -69,11 +69,11 @@ Built using **Jakarta Servlet API, JSP, MySQL, Maven, and Apache Tomcat**, follo
 
 | Role            | Dashboard Path                  | Permissions |
 |-----------------|----------------------------------|------------|
-| Student         | `/student/dashboard.jsp`         | Submit feedback, view responses |
-| Instructor      | `/instructor/dashboard.jsp`      | View & respond to feedback, escalate |
-| Department Head | `/department/dashboard.jsp`      | Handle forwarded feedback |
-| Student Affairs | `/affairs/dashboard.jsp`         | Manage sensitive cases |
-| Admin           | `/admin/dashboard.jsp`           | User & feedback management |
+| Student         | `student.jsp`         | Submit feedback, view responses |
+| Instructor      | `instructor.jsp`      | View & respond to feedback, escalate |
+| Department Head | `department.jsp`      | Handle forwarded feedback |
+| Student Affairs | `affairs.jsp`         | Manage sensitive cases |
+| Admin           | `admin.jsp`           | User & feedback management |
 
 ---
 
