@@ -2,7 +2,7 @@
 
 ## Overview
 The Student Feedback Evaluation System is a Java web application built using **Servlets, JSP, and Maven**.  
-It allows students to register, log in, and submit feedback for instructors, while administrators can view and evaluate feedback results.
+It allows students to register, log in, and submit feedback for instructors, Instructor to view feedback from students and give response if case is direct and comment, Affairs like Gender issue office shall see the case that come in and evaluate. Department head also  view, give responses, or forward the issues to admin,  Administrators can view and evaluate feedback results with all overview of analytics.
 
 This project is developed as a **group project** for academic purposes.
 
@@ -29,6 +29,7 @@ StudentFeedbackSystem/
 │     └─ webapp/
 │        ├─ css/
 │        │    └─ style.css
+|        ├─ affair.jsp
 │        ├─ index.jsp
 │        ├─ login.jsp
 │        ├─ register.jsp
@@ -84,7 +85,7 @@ StudentFeedbackSystem/
 
 ## How to Run the Project
 1. Install **JDK** and **Apache Tomcat**
-2. Open the project in an IDE (IntelliJ IDEA / Eclipse)
+2. Open the project(clone the repository) in an VS code.
 3. Ensure Maven dependencies are downloaded
 4. Configure the project on Tomcat server
 5. Run the application
