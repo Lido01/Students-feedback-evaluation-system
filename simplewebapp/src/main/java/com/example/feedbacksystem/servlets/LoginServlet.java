@@ -1,80 +1,56 @@
 package com.example.feedbacksystem.servlets;
 
-import jakarta.servlet.ServletException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import com.example.feedbacksystem.util.DBUtil;
+
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import java.io.IOException;
-import java.util.HashMap;
-
-import com.example.feedbacksystem.models.User;
-
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
-    /*
-     * In-memory user store.
-     * NOTE: This is for learning/testing only.
-     * Data will reset when the server restarts.
-     */
-    public static HashMap<String, User> users = new HashMap<>();
-
     @Override
-    public void init() {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
 
-        // Predefined system users
-        users.put("admin", new User("admin", "admin", "admin"));
-        users.put("instructor", new User("instructor", "inst123", "instructor"));
-        users.put("student", new User("student", "stud123", "student"));
-    }
+        String schoolId = req.getParameter("schoolId");
+        String password = req.getParameter("password");
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        String sql = "SELECT * FROM users WHERE school_id=? AND password=?";
 
-        // Read form parameters
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        try (Connection con = DBUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-        // Basic validation to avoid null or empty values
-        if (username == null || password == null ||
-            username.isEmpty() || password.isEmpty()) {
+            ps.setString(1, schoolId);
+            ps.setString(2, password);
 
-            response.sendRedirect("login.jsp?error=invalid");
-            return;
-        }
+            ResultSet rs = ps.executeQuery();
 
-        // Look up user
-        User user = users.get(username);
+            if (rs.next()) {
+                HttpSession session = req.getSession();
+                session.setAttribute("userId", rs.getInt("id"));
+                session.setAttribute("fullName", rs.getString("full_name"));
+                session.setAttribute("role", rs.getString("role"));
 
-        // Authenticate user
-        if (user != null && user.getPassword().equals(password)) {
-
-            // Create session and store logged-in user
-            HttpSession session = request.getSession(true);
-            session.setAttribute("user", user);
-
-            // Role-based redirection
-            switch (user.getRole()) {
-                case "admin":
-                    response.sendRedirect("admin.jsp");
-                    break;
-
-                case "instructor":
-                    response.sendRedirect("instructor.jsp");
-                    break;
-
-                default:
-                    response.sendRedirect("feedback.jsp");
-                    break;
+                switch (rs.getString("role")) {
+                    case "STUDENT" -> resp.sendRedirect("student.jsp");
+                    case "INSTRUCTOR" -> resp.sendRedirect("instructor.jsp");
+                    case "DEPARTMENT" -> resp.sendRedirect("department.jsp");
+                    case "AFFAIRS" -> resp.sendRedirect("affairs.jsp");
+                    case "ADMIN" -> resp.sendRedirect("admin");
+                }
+            } else {
+                resp.sendRedirect("login.jsp?error=true");
             }
-
-        } else {
-            // Authentication failed
-            response.sendRedirect("login.jsp?error=invalid");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

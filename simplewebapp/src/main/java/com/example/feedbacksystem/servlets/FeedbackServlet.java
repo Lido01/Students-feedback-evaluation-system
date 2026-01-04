@@ -1,13 +1,17 @@
 package com.example.feedbacksystem.servlets;  // Package declaration
 
 
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.WebServlet;
 import java.io.IOException;
-import java.util.ArrayList;
-import com.example.feedbacksystem.models.Feedback;
-import com.example.feedbacksystem.models.User;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import com.example.feedbacksystem.util.DBUtil;
+
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 
 @WebServlet("/submitFeedback")

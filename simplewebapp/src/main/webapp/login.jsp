@@ -1,55 +1,34 @@
-<%@ page session="true" %>
-<%@ include file="header.jsp" %>
-
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
-    <!-- Main stylesheet -->
+    <title>Login | Student Feedback System</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Login</h2>
+<div class="container">
+    <h2>Login</h2>
 
-<%
-    /*
-     * Read query parameters sent by LoginServlet
-     * error=invalid    → wrong username or password
-     * success=registered → user just registered successfully
-     */
-    String error = request.getParameter("error");
-    String success = request.getParameter("success");
-%>
+    <form action="login" method="post">
+        <label>School ID</label>
+        <input type="text" name="schoolId"
+               placeholder="UGR/00001/16" required>
 
-<!-- Error message -->
-<% if ("invalid".equals(error)) { %>
-    <p class="error">Invalid username or password.</p>
-<% } %>
+        <label>Password</label>
+        <input type="password" name="password" required>
 
-<!-- Success message after registration -->
-<% if ("registered".equals(success)) { %>
-    <p class="success">Registration successful. Please log in.</p>
-<% } %>
+        <button type="submit">Login</button>
+    </form>
 
-<!-- Login form -->
-<form action="login" method="post">
+    <% if ("invalid".equals(request.getParameter("error"))) { %>
+        <p class="error">Invalid School ID or Password</p>
+    <% } %>
 
-    <!-- Username field -->
-    <label>Username:</label><br>
-    <input type="text" name="username" required><br><br>
-
-    <!-- Password field -->
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
-
-    <button type="submit">Login</button>
-</form>
-
-<p>
-    New user?
-    <a href="register.jsp">Register here</a>
-</p>
+    <p style="margin-top:15px;">
+        New user? <a href="register.jsp">Register here</a>
+    </p>
+</div>
 
 </body>
 </html>
+
