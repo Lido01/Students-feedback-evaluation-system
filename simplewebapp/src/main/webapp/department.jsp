@@ -21,6 +21,7 @@
         while (rs.next()) {
             hasResults = true;
 
+            int feedbackId = rs.getInt("id");
             request.setAttribute("message", rs.getString("message"));
             request.setAttribute("status", rs.getString("status"));
 %>
@@ -37,8 +38,14 @@
     </p>
 
     <form action="department" method="post">
-        <textarea name="response" required></textarea>
-        <input type="hidden" name="feedbackId" value="<%= rs.getInt("id") %>">
+        <label for="response-<%= feedbackId %>">Response</label>
+        <textarea
+            id="response-<%= feedbackId %>"
+            name="response"
+            required>
+        </textarea>
+
+        <input type="hidden" name="feedbackId" value="<%= feedbackId %>">
 
         <button type="submit">Close Case</button>
         <button type="submit" name="action" value="FORWARD">
