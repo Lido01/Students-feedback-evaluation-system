@@ -4,6 +4,12 @@
      I am still learning, so maybe some things are not perfect.
      I tried adding error checking, but not sure if it will always work. --%>
 
+
+     Modifications Made:
+     1. Added placeholder text to input fields for better user guidance.
+     2. Preserved entered username and email when an error occurs.
+--%>
+
 <%@ page session="true" %>
 <%@ include file="header.jsp" %>
 
@@ -11,7 +17,7 @@
 <head>
     <title>Register Page</title>
     <!-- I think I linked css correctly, but sometimes it does not show styles -->
-    <link rel="stylesheet" href="css/style.css"> 
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <h2>Register</h2>
@@ -23,13 +29,20 @@
     
     <form action="register" method="post">
         <label>Username:</label><br>
-        <input type="text" name="username" required><br><br>
+        <input type="text" name="username" required
+               placeholder="Enter username"
+               value="<%= request.getParameter("username") != null ? request.getParameter("username") : "" %>">
+        <br><br>
         
         <label>Email:</label><br>
-        <input type="email" name="email" required><br><br> <%-- I forgot to add placeholder first, maybe I should --%>
+        <input type="email" name="email" required
+               placeholder="Enter email"
+               value="<%= request.getParameter("email") != null ? request.getParameter("email") : "" %>">
+        <br><br>
         
         <label>Password:</label><br>
-        <input type="password" name="password" required><br><br>
+        <input type="password" name="password" required placeholder="Enter password">
+        <br><br>
         
         <button type="submit">Register</button>
     </form>
