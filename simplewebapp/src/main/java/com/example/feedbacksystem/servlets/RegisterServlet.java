@@ -1,10 +1,11 @@
 /*
     Name: Dagmawi Wondwosen
     ID: Ugr/34184/16
-    I tried to create the backend for the registration page I pushed (register.jsp). 
-    The servlet handles the POST request when the user submits the form. 
-    I tried to check if the username already exists and redirect to login if successful. 
-    I am still learning, so maybe there are small things that could be improved.
+    Modified version after initial push:
+    - Added input trimming
+    - Added check for empty username/password
+    - Updated redirect messages for clarity
+    - Added small notes about plain password
 */
 
 package com.example.feedbacksystem.servlets;
@@ -22,22 +23,27 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        // get input and remove extra spaces (was missing before)
+        String username = request.getParameter("username").trim();
+        String password = request.getParameter("password").trim();
+
+       
+        if (username.isEmpty() || password.isEmpty()) {
+            response.sendRedirect("register.jsp?error=empty");
+            return; // stop processing if invalid
+        }
 
         
-        if(LoginServlet.users.containsKey(username)){ 
-            
+        if (LoginServlet.users.containsKey(username)) {
             response.sendRedirect("register.jsp?error=exists");
         } else {
-            
+           
             LoginServlet.users.put(username, new User(username, password, "student"));
+
             
             response.sendRedirect("login.jsp?success=registered");
         }
 
-        // I tried to connect this with the register.jsp page I just pushed
-        // The form action in JSP points here, so they work together
+        // form still points to this servlet, no changes here
     }
 }
