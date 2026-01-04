@@ -38,8 +38,17 @@ public class DepartmentServlet extends HttpServlet {
         String action = req.getParameter("action");
 
         HttpSession session = req.getSession(false);
-        if (session == null || session.getAttribute("userId") == null) {
+        if (session == null
+                || session.getAttribute("userId") == null
+                || session.getAttribute("userRole") == null) {
             resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Session expired");
+            return;
+        }
+
+        // 🔒 Role-based authorization
+        String userRole = session.getAttribute("userRole").toString();
+        if (!"DEPARTMENT".equals(userRole)) {
+            resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Access denied");
             return;
         }
 
