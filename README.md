@@ -87,8 +87,6 @@ Built using **Jakarta Servlet API, JSP, MySQL, Maven, and Apache Tomcat**, follo
 | Affairs    | `AFF/01` |
 | Admin      | `ADM/001` |
 
----
-
 ## 📂 Folder Structure
 
 StudentFeedbackSystem/
@@ -115,16 +113,14 @@ StudentFeedbackSystem/
         ├── login.jsp
         ├── register.jsp
         ├── header.jsp
-        ├── student/dashboard.jsp
-        ├── instructor/dashboard.jsp
-        ├── department/dashboard.jsp
-        ├── affairs/dashboard.jsp
-        └── admin/dashboard.jsp
-
-
-
-
----
+        ├── student.jsp
+        ├── instructor.jsp
+        ├── department.jsp
+        ├── affairs.jsp
+        └── admin.jsp
+        ├── link.jsp
+        └── dashboard.jsp
+        ├── feedback.jsp
 
 ## 🗄️ Database Design (MySQL)
 
