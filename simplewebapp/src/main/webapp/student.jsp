@@ -15,24 +15,38 @@
        - Shows status of each feedback (Pending, Completed, Declined).
        - Displays response from the responder (Instructor, Department, or Affairs) if available.
        - Queries database using student's ID from session to fetch all related feedback and responses.
-    
+       - Shows whether feedback was submitted as Anonymous or Named.   // MODIFIED
+
     3. Styling:
        - Uses simple CSS for cards, form fields, and status badges for clear UI.
 
     Name: Dagmawi Wondwosen
     ID: UGR/34184/16
+
+    Modifications Made:
+    1. Added a success message alert after feedback submission.
+    2. Displayed feedback identity (Anonymous / Named) in feedback history.
 --%>
 
 <%@ page import="java.sql.*" %>
 <%@ page import="com.example.feedbacksystem.util.DBUtil" %>
 <%@ include file="header.jsp" %>
 
-<div class="container"></div>
-...
-
-
 <div class="container">
+
 <h2>Student Dashboard</h2>
+
+<%-- Success message after submission --%>
+<%
+    String success = request.getParameter("success");
+    if ("true".equals(success)) {
+%>
+    <p style="color:green; font-weight:bold;">
+        ✔ Feedback submitted successfully
+    </p>
+<%
+    }
+%>
 
 <!-- FEEDBACK FORM -->
 <div class="card">
@@ -62,7 +76,9 @@
 <option value="<%= inst.getInt("id") %>">
     <%= inst.getString("full_name") %>
 </option>
-<% } %>
+<%
+    }
+%>
 </select>
 
 <label>Identity</label>
@@ -102,6 +118,11 @@
 <p><b>Status:</b> <%= rs.getString("status") %></p>
 <p><b>Message:</b> <%= rs.getString("message") %></p>
 
+<p>
+<b>Identity:</b>
+<%= rs.getBoolean("anonymous") ? "Anonymous" : "Named" %>
+</p>
+
 <% if (rs.getString("response") != null) { %>
 <p><b>Response from <%= rs.getString("responder_role") %>:</b></p>
 <p><%= rs.getString("response") %></p>
@@ -115,20 +136,33 @@
     }
     con.close();
 %>
+
 </div>
+
 <style>
 .container { max-width:800px; margin:30px auto; font-family:Arial, sans-serif; }
 h2 { color:#003366; }
 h3 { margin-bottom:15px; }
-.card { background:#fff; padding:20px; border-radius:6px; margin-bottom
-:20px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
+.card {
+    background:#fff;
+    padding:20px;
+    border-radius:6px;
+    margin-bottom:20px;
+    box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
 form label { display:block; margin-top:10px; }
-form select, form textarea, form button { width:100%; margin-top:10px; padding:8px; }
-form button { margin-top:15px; padding:10px 15px; background:#003366; color:#fff; border:none; border-radius:4px; cursor:pointer; }
+form select, form textarea, form button {
+    width:100%;
+    margin-top:10px;
+    padding:8px;
+}
+form button {
+    margin-top:15px;
+    background:#003366;
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+}
 form button:hover { background:#002244; }
-.section-title { margin-top:30px; border-bottom:2px solid #003366; }
-.badge { padding:4px 8px; border-radius:4px; color:#fff; }
-.PENDING { background:#f0ad4e; }
-.COMPLETED { background:#5cb85c; }
-.DECLINED { background:#d9534f; }
 </style>
