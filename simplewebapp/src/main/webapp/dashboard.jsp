@@ -5,8 +5,13 @@
     If the user is not logged in, they are redirected to the login page.
     Once authenticated, the page displays a styled student dashboard
     with options to give feedback and log out.
---%>
 
+    Name: Dagmawi Wondwosen
+
+    Modifications Made:
+    1. Added a dynamic greeting message based on time of day (Morning/Afternoon/Evening).
+    2. Displayed the logged-in username more clearly using a bold style.
+--%>
 
 <%@ page import="jakarta.servlet.http.HttpSession" %>
 <%
@@ -14,6 +19,18 @@
     if (sessionObj == null || sessionObj.getAttribute("user") == null) {
         response.sendRedirect("login.jsp");
         return;
+    }
+
+    // Determine greeting based on time
+    java.util.Calendar cal = java.util.Calendar.getInstance();
+    int hour = cal.get(java.util.Calendar.HOUR_OF_DAY);
+    String greeting;
+    if (hour < 12) {
+        greeting = "Good Morning";
+    } else if (hour < 18) {
+        greeting = "Good Afternoon";
+    } else {
+        greeting = "Good Evening";
     }
 %>
 
@@ -83,7 +100,7 @@
 <body>
 
 <div class="dashboard">
-    <h2>Welcome, <%= sessionObj.getAttribute("user") %></h2>
+    <h2><%= greeting %>, <b><%= sessionObj.getAttribute("user") %></b></h2>
     <p>This is the student dashboard.</p>
 
     <a href="feedback.jsp" class="feedback">Give Feedback</a>
