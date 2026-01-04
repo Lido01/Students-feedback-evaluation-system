@@ -45,9 +45,9 @@ public class DepartmentServlet extends HttpServlet {
 
         int departmentUserId = (int) session.getAttribute("userId");
 
-        try (Connection con = DBUtil.getConnection()) {
-
-            // 🔐 Begin transaction
+        Connection con = null;
+        try {
+            con = DBUtil.getConnection();
             con.setAutoCommit(false);
 
             // 1️⃣ Save department response
@@ -77,17 +77,22 @@ public class DepartmentServlet extends HttpServlet {
                 ps2.executeUpdate();
             }
 
-            // ✅ Commit transaction
             con.commit();
-
             resp.sendRedirect("department.jsp");
 
         } catch (Exception e) {
-            // ❌ Rollback on failure
-            try {
-                DBUtil.getConnection().rollback();
-            } catch (Exception ignored) {}
+            if (con != null) {
+                try {
+                    con.rollback();
+                } catch (Exception ignored) {}
+            }
             throw new RuntimeException(e);
+        } finally {
+            if (con != null) {
+                try {
+                    con.close();
+                } catch (Exception ignored) {}
+            }
         }
     }
 }
