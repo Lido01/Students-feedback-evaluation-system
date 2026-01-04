@@ -19,7 +19,6 @@ public class DepartmentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
 
-        // 🔒 Basic input validation
         String feedbackIdParam = req.getParameter("feedbackId");
         String responseText = req.getParameter("response");
 
@@ -36,7 +35,7 @@ public class DepartmentServlet extends HttpServlet {
             return;
         }
 
-        String action = req.getParameter("action"); // FORWARD or null
+        String action = req.getParameter("action");
 
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
@@ -47,6 +46,9 @@ public class DepartmentServlet extends HttpServlet {
         int departmentUserId = (int) session.getAttribute("userId");
 
         try (Connection con = DBUtil.getConnection()) {
+
+            // 🔐 Begin transaction
+            con.setAutoCommit(false);
 
             // 1️⃣ Save department response
             String insertResponse =
@@ -75,9 +77,16 @@ public class DepartmentServlet extends HttpServlet {
                 ps2.executeUpdate();
             }
 
+            // ✅ Commit transaction
+            con.commit();
+
             resp.sendRedirect("department.jsp");
 
         } catch (Exception e) {
+            // ❌ Rollback on failure
+            try {
+                DBUtil.getConnection().rollback();
+            } catch (Exception ignored) {}
             throw new RuntimeException(e);
         }
     }
