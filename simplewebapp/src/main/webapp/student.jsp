@@ -23,7 +23,7 @@
     Name: Dagmawi Wondwosen
     ID: UGR/34184/16
 
-    Modifications Made:
+    some modifications made over this past 2 says:
     1. Added a success message alert after feedback submission.
     2. Displayed feedback identity (Anonymous / Named) in feedback history.
 --%>
