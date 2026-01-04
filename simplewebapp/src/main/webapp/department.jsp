@@ -15,7 +15,10 @@
         ResultSet rs = ps.executeQuery();
     ) {
 
+        boolean hasResults = false;
+
         while (rs.next()) {
+            hasResults = true;
 %>
 
 <div class="card">
@@ -33,6 +36,12 @@
     </form>
 </div>
 
+<%
+        }
+
+        if (!hasResults) {
+%>
+    <p class="subtitle">No feedback available for the department.</p>
 <%
         }
     }
