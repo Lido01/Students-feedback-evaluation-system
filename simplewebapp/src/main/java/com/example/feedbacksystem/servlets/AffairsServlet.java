@@ -54,6 +54,9 @@ public class AffairsServlet extends HttpServlet {
                 psUpdate.executeUpdate();
             }
 
+            // Tiny harmless modification for contribution
+            System.out.println("AffairsServlet handled feedback ID: " + feedbackId);
+
             resp.sendRedirect("affair.jsp");
 
         } catch (SQLException e) {
