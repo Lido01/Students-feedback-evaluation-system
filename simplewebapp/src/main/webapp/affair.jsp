@@ -11,18 +11,21 @@
         ResultSet rs = null;
         try {
             con = DBUtil.getConnection();
-            ps = con.prepareStatement("SELECT * FROM feedback WHERE target_role='AFFAIRS'");
+            ps = con.prepareStatement(
+                "SELECT id, status, message, DATE(created_at) AS created_date FROM feedback WHERE target_role='AFFAIRS' ORDER BY created_at DESC"
+            );
             rs = ps.executeQuery();
 
             while (rs.next()) {
     %>
 
     <div class="card warning">
+        <p><b>Date:</b> <%= rs.getString("created_date") %></p>
         <p><b>Status:</b> <%= rs.getString("status") %></p>
         <p><b>Message:</b> <%= rs.getString("message") %></p>
 
         <form action="affairs" method="post">
-            <textarea name="response" required></textarea>
+            <textarea name="response" placeholder="Enter your response..." required></textarea>
             <input type="hidden" name="feedbackId" value="<%= rs.getInt("id") %>">
             <button type="submit">Close Case</button>
         </form>
@@ -44,8 +47,9 @@
 .container { max-width:800px; margin:30px auto; font-family:Arial,sans-serif; }
 h2 { color:#003366; margin-bottom:20px; }
 .card { background:#fff; padding:20px; border-radius:6px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,.1); }
-.card.warning { background-color: #ffcc00; border-left:5px solid red; }
+.card.warning { background-color: #ffeb99; border-left:5px solid orange; }
 textarea, button { width:100%; margin-top:10px; padding:8px; }
+textarea { resize: vertical; }
 button { margin-top:15px; padding:10px 15px; background:#003366; color:#fff; border:none; border-radius:4px; cursor:pointer; }
 button:hover { background:#002244; }
 </style>
