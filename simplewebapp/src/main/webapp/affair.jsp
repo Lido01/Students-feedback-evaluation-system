@@ -23,6 +23,9 @@
         <p><b>Date:</b> <%= rs.getString("created_date") %></p>
         <p><b>Status:</b> <%= rs.getString("status") %></p>
         <p><b>Message:</b> <%= rs.getString("message") %></p>
+        
+        <!-- Tiny harmless modification for contribution -->
+        <p style="font-size:12px; color:gray;">Viewed by Affairs staff ✔</p>
 
         <form action="affairs" method="post">
             <textarea name="response" placeholder="Enter your response..." required></textarea>
