@@ -3,6 +3,7 @@ package com.example.feedbacksystem.servlets;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import com.example.feedbacksystem.util.DBUtil;
 
@@ -16,36 +17,47 @@ import jakarta.servlet.http.HttpSession;
 public class AffairsServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
             throws IOException {
 
         int feedbackId = Integer.parseInt(req.getParameter("feedbackId"));
         String responseText = req.getParameter("response");
 
         HttpSession session = req.getSession();
-        int affairsId = (int) session.getAttribute("userId");
+        Object userObj = session.getAttribute("userId");
+
+        if(userObj == null) {
+            resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "User not logged in");
+            return;
+        }
+
+        int affairsId = (int) userObj;
 
         try (Connection con = DBUtil.getConnection()) {
 
-            String insert =
-                "INSERT INTO feedback_responses (feedback_id, responder_id, responder_role, response) " +
-                "VALUES (?, ?, 'AFFAIRS', ?)";
+            // Insert the response with small validation
+            try (PreparedStatement psInsert = con.prepareStatement(
+                    "INSERT INTO feedback_responses (feedback_id, responder_id, responder_role, response) VALUES (?, ?, 'AFFAIRS', ?)"
+            )) {
+                if(responseText.trim().isEmpty()) responseText = "No response provided";
+                psInsert.setInt(1, feedbackId);
+                psInsert.setInt(2, affairsId);
+                psInsert.setString(3, responseText);
+                psInsert.executeUpdate();
+            }
 
-            PreparedStatement ps1 = con.prepareStatement(insert);
-            ps1.setInt(1, feedbackId);
-            ps1.setInt(2, affairsId);
-            ps1.setString(3, responseText);
-            ps1.executeUpdate();
+            // Update feedback status safely
+            try (PreparedStatement psUpdate = con.prepareStatement(
+                    "UPDATE feedback SET status='CLOSED' WHERE id=?"
+            )) {
+                psUpdate.setInt(1, feedbackId);
+                psUpdate.executeUpdate();
+            }
 
-            PreparedStatement ps2 =
-                con.prepareStatement("UPDATE feedback SET status='CLOSED' WHERE id=?");
-            ps2.setInt(1, feedbackId);
-            ps2.executeUpdate();
+            resp.sendRedirect("affair.jsp");
 
-            resp.sendRedirect("affairs.jsp");
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Database error: " + e.getMessage(), e);
         }
     }
 }
